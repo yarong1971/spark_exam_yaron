@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Event {
-    private long eventId;
     private LocalDateTime eventTime;
     private Country eventCountry;
     private Currency eventCurrencyCode;
     private long userId;
     private double bet;
+    private long eventId;
     private Game gameName;
     private double win;
     private long onlineTimeSecs;
