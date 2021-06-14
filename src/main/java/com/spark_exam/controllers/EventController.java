@@ -28,61 +28,21 @@ public class EventController {
         }
     }
 
-    @GetMapping("/gamestat/bet/{gameName}/{fromDate}/{toDate}")
-    public ResponseEntity<List<GameStat>> gameBetStatistics(@PathVariable String gameName, @PathVariable String fromDate, @PathVariable String toDate){
-        List<GameStat> gameStats = eventService.getGameBetStatistics(gameName, fromDate, toDate);
-        if(gameStats.size() > 0) {
-            return ResponseEntity.ok(gameStats);
-        } else {
+    @GetMapping("/gamestat/{gameName}/{fromDate}/{toDate}")
+    public ResponseEntity<GameStat> gameBetStatistics(@PathVariable String gameName, @PathVariable String fromDate, @PathVariable String toDate){
+        GameStat gameStats = eventService.getGameStatistics(gameName, fromDate, toDate);
+        if(gameStats == null) {
             return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(gameStats);
         }
     }
 
-    @GetMapping("/gamestat/win/{gameName}/{fromDate}/{toDate}")
-    public ResponseEntity<List<GameStat>> gameWinStatistics(@PathVariable String gameName, @PathVariable String fromDate, @PathVariable String toDate){
-        List<GameStat> gameStats = eventService.getGameWinStatistics(gameName, fromDate, toDate);
-        if(gameStats.size() > 0) {
-            return ResponseEntity.ok(gameStats);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/gamestat/profit/{gameName}/{fromDate}/{toDate}")
-    public ResponseEntity<List<GameStat>> gameProfitStatistics(@PathVariable String gameName, @PathVariable String fromDate, @PathVariable String toDate){
-        List<GameStat> gameStats = eventService.getGameProfitStatistics(gameName, fromDate, toDate);
-        if(gameStats.size() > 0) {
-            return ResponseEntity.ok(gameStats);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/allgamesstat/bet/{fromDate}/{toDate}")
+    @GetMapping("/allgamesstat/{fromDate}/{toDate}")
     public ResponseEntity<List<GameStat>> allGamesBetStatistics(@PathVariable String fromDate, @PathVariable String toDate){
-        List<GameStat> allGamesStats = eventService.getAllGamesBetStatistics(fromDate, toDate);
+        List<GameStat> allGamesStats = eventService.getAllGamesStatistics(fromDate, toDate);
         if(allGamesStats.size() > 0) {
             return ResponseEntity.ok(allGamesStats);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/allgamesstat/win/{fromDate}/{toDate}")
-    public ResponseEntity<List<GameStat>> allGamesWinStatistics(@PathVariable String fromDate, @PathVariable String toDate){
-        List<GameStat> gameStats = eventService.getAllGamesWinStatistics(fromDate, toDate);
-        if(gameStats.size() > 0) {
-            return ResponseEntity.ok(gameStats);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/allgamesstat/profit/{fromDate}/{toDate}")
-    public ResponseEntity<List<GameStat>> allGamesProfitStatistics(@PathVariable String fromDate, @PathVariable String toDate){
-        List<GameStat> gameStats = eventService.getAllGamesProfitStatistics(fromDate, toDate);
-        if(gameStats.size() > 0) {
-            return ResponseEntity.ok(gameStats);
         } else {
             return ResponseEntity.notFound().build();
         }

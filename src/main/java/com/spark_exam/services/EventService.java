@@ -92,94 +92,44 @@ public class EventService implements Serializable {
                                      " ORDER BY e." + USER_ID + ", e." + EVENT_TIME;
 
         Dataset<Row> result = sparkSession.sql(suspiciousActivities);
-        return eventRepository.getActivity(result);
+        return eventRepository.getActivities(result);
     }
 
-    public List<GameStat> getGameBetStatistics(String gameName, String fromDate, String toDate) {
-        Dataset<Row> gameBetStatistics = rows.filter(col(EVENT_TIME).between(fromDate, toDate)
-                                                    .and(col(GAME_NAME).equalTo(gameName)))
-                                             .withColumn(STATS_TYPE,lit("Bet"))
-                                             .select(GAME_NAME, STATS_TYPE, BET_VALUE)
-                                             .groupBy(GAME_NAME)
-                                             .agg(max(STATS_TYPE).alias("statsType"),
-                                                  avg(BET_VALUE).alias("avgStats"),
-                                                  max(BET_VALUE).alias("maxStats"),
-                                                  min(BET_VALUE).alias("minStats"))
+    public GameStat getGameStatistics(String gameName, String fromDate, String toDate) {
+        Dataset<Row> gameStatistics = rows.filter(col(EVENT_TIME).between(fromDate, toDate)
+                .and(col(GAME_NAME).equalTo(gameName)))
+                .select(GAME_NAME, BET_VALUE, WIN, PROFIT)
+                .groupBy(GAME_NAME)
+                .agg(avg(BET_VALUE).alias("betAvgStats"),
+                        max(BET_VALUE).alias("betMaxStats"),
+                        min(BET_VALUE).alias("betMinStats"),
+                        avg(WIN).alias("winAvgStats"),
+                        max(WIN).alias("winMaxStats"),
+                        min(WIN).alias("winMinStats"),
+                        avg(PROFIT).alias("profitAvgStats"),
+                        max(PROFIT).alias("profitMaxStats"),
+                        min(PROFIT).alias("profitMinStats"))
+                .orderBy(GAME_NAME);
+
+        return eventRepository.getGameStats(gameStatistics).isEmpty() ?  null : eventRepository.getGameStats(gameStatistics).get(0);
+    }
+
+    public List<GameStat> getAllGamesStatistics(String fromDate, String toDate) {
+        Dataset<Row> allGamesStatistics = rows.filter(col(EVENT_TIME).between(fromDate, toDate))
+                                            .select(GAME_NAME, BET_VALUE, WIN, PROFIT)
+                                            .groupBy(GAME_NAME)
+                                            .agg(avg(BET_VALUE).alias("betAvgStats"),
+                                                max(BET_VALUE).alias("betMaxStats"),
+                                                min(BET_VALUE).alias("betMinStats"),
+                                                avg(WIN).alias("winAvgStats"),
+                                                max(WIN).alias("winMaxStats"),
+                                                min(WIN).alias("winMinStats"),
+                                                avg(PROFIT).alias("profitAvgStats"),
+                                                max(PROFIT).alias("profitMaxStats"),
+                                                min(PROFIT).alias("profitMinStats"))
                                             .orderBy(GAME_NAME);
 
-        return eventRepository.getGameStats(gameBetStatistics);
-    }
-
-    public List<GameStat> getGameWinStatistics(String gameName, String fromDate, String toDate) {
-        Dataset<Row> gameWinStatistics = rows.filter(col(EVENT_TIME).between(fromDate, toDate)
-                                                    .and(col(GAME_NAME).equalTo(gameName)))
-                                             .withColumn(STATS_TYPE,lit("Win"))
-                                             .select(GAME_NAME, STATS_TYPE, WIN)
-                                             .groupBy(GAME_NAME)
-                                             .agg(max(STATS_TYPE).alias("statsType"),
-                                                  avg(WIN).alias("avgStats"),
-                                                  max(WIN).alias("maxStats"),
-                                                  min(WIN).alias("minStats"))
-                                             .orderBy(GAME_NAME);
-
-        return eventRepository.getGameStats(gameWinStatistics);
-    }
-
-    public List<GameStat> getGameProfitStatistics(String gameName, String fromDate, String toDate) {
-        Dataset<Row> gameProfitStatistics = rows.filter(col(EVENT_TIME).between(fromDate, toDate)
-                                                        .and(col(GAME_NAME).equalTo(gameName)))
-                                                .withColumn(STATS_TYPE,lit("Profit"))
-                                                .select(GAME_NAME, STATS_TYPE, PROFIT)
-                                                .groupBy(GAME_NAME)
-                                                .agg(max(STATS_TYPE).alias("statsType"),
-                                                        avg(PROFIT).alias("avgStats"),
-                                                        max(PROFIT).alias("maxStats"),
-                                                        min(PROFIT).alias("minStats"))
-                                                .orderBy(GAME_NAME);
-
-        return eventRepository.getGameStats(gameProfitStatistics);
-    }
-
-    public List<GameStat> getAllGamesBetStatistics(String fromDate, String toDate) {
-        Dataset<Row> allGamesBetStatistics = rows.filter(col(EVENT_TIME).between(fromDate, toDate))
-                                                 .withColumn(STATS_TYPE,lit("Bet"))
-                                                 .select(GAME_NAME, STATS_TYPE, BET_VALUE)
-                                                 .groupBy(GAME_NAME)
-                                                 .agg(max(STATS_TYPE).alias("statsType"),
-                                                      avg(BET_VALUE).alias("avgStats"),
-                                                      max(BET_VALUE).alias("maxStats"),
-                                                      min(BET_VALUE).alias("minStats"))
-                                                 .orderBy(GAME_NAME);
-
-        return eventRepository.getGameStats(allGamesBetStatistics);
-    }
-
-    public List<GameStat> getAllGamesWinStatistics(String fromDate, String toDate) {
-        Dataset<Row> allGamesWinStatistics = rows.filter(col(EVENT_TIME).between(fromDate, toDate))
-                                                .withColumn(STATS_TYPE,lit("Win"))
-                                                .select(GAME_NAME, STATS_TYPE, WIN)
-                                                .groupBy(GAME_NAME)
-                                                .agg(max(STATS_TYPE).alias("statsType"),
-                                                     avg(WIN).alias("avgStats"),
-                                                     max(WIN).alias("maxStats"),
-                                                     min(WIN).alias("minStats"))
-                                                 .orderBy(GAME_NAME);
-
-        return eventRepository.getGameStats(allGamesWinStatistics);
-    }
-
-    public List<GameStat> getAllGamesProfitStatistics(String fromDate, String toDate) {
-        Dataset<Row> allGamesProfitStatistics = rows.filter(col(EVENT_TIME).between(fromDate, toDate))
-                                                    .withColumn(STATS_TYPE,lit("Profit"))
-                                                    .select(GAME_NAME, STATS_TYPE, PROFIT)
-                                                    .groupBy(GAME_NAME)
-                                                    .agg(max(STATS_TYPE).alias("statsType"),
-                                                         avg(PROFIT).alias("avgStats"),
-                                                         max(PROFIT).alias("maxStats"),
-                                                         min(PROFIT).alias("minStats"))
-                                                    .orderBy(GAME_NAME);
-
-        return eventRepository.getGameStats(allGamesProfitStatistics);
+        return eventRepository.getGameStats(allGamesStatistics);
     }
 
     @EventListener(ContextRefreshedEvent.class)

@@ -11,8 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GameStat {
     private String gameName;
-    private String StatsType;
-    private double avgStats;
-    private double maxStats;
-    private double minStats;
+    private double betAvgStats;
+    private double betMaxStats;
+    private double betMinStats;
+    private double winAvgStats;
+    private double winMaxStats;
+    private double winMinStats;
+    private double profitAvgStats;
+    private double profitMaxStats;
+    private double profitMinStats;
 }

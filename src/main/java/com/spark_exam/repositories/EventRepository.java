@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class EventRepository {
@@ -30,7 +31,7 @@ public class EventRepository {
         return dataset.as(gameStatEncoder).collectAsList();
     }
 
-    public List<Activity> getActivity(Dataset<Row> dataset){
+    public List<Activity> getActivities(Dataset<Row> dataset){
         Encoder<Activity> activityEncoder = Encoders.bean(Activity.class);
         return dataset.as(activityEncoder).collectAsList();
     }
