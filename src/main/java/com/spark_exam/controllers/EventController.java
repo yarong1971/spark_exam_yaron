@@ -38,7 +38,7 @@ public class EventController {
         }
     }
 
-    @GetMapping("/allgamesstat/{fromDate}/{toDate}")
+    @GetMapping("/gamestat/all/{fromDate}/{toDate}")
     public ResponseEntity<List<GameStat>> allGamesBetStatistics(@PathVariable String fromDate, @PathVariable String toDate){
         List<GameStat> allGamesStats = eventService.getAllGamesStatistics(fromDate, toDate);
         if(allGamesStats.size() > 0) {
