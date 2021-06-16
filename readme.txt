@@ -33,7 +33,7 @@ Java: http://localhost:8080/event/suspiciousActivities/java/{fromDate}/{toDate}
 Java Example: http://localhost:8080/event/suspiciousActivities/java/2018-01-01/2018-01-15
 
 Scala: http://localhost:8080/event/suspiciousActivities/scala/{fromDate}/{toDate}
-ScalaExample: http://localhost:8080/event/suspiciousActivities/scala/2018-01-01/2018-01-15
+Scala Example: http://localhost:8080/event/suspiciousActivities/scala/2018-01-01/2018-01-15
 
 The Output (Http Response) is in a json format and its content looks as follow:
 
