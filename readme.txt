@@ -22,10 +22,10 @@ the events data is used as a big data platform to work with Spark SQL
 Services:
 The REST API exposes the following services (in Java and Scala):
 
-Service 1: SuspiciousActivities of users/players:
+Service 1: Suspicious activities of users/players:
 a suspicious activity is defined by the following rules:
     a. User/Player made bets from different countries in the provided time period
-    b. Win/Bet ratio is higher than /10
+    b. Win/Bet ratio is higher than 1/10
     c. User/Player online time is higher than 5 hours
 
 The Http Request URL is:
@@ -77,7 +77,7 @@ Service 2: Statistics for specific game by game name and time period
 This service calculates the following statistics measurements
     a. Average, Maximum and Minimum bet for requested game in time period
     b. Average, Maximum and Minimum win for requested game in time period
-    c. Average, Maximum and Minimum profit (= win - bet) for requested game in time period
+    c. Average, Maximum and Minimum profit (win - bet) for requested game in time period
 
 The Http Request URL is:
 Java: http://localhost:8080/event/gamestat/java/{gameName}/{fromDate}/{toDate}
@@ -146,8 +146,8 @@ The Output (Http Response) is in a json format and its content looks as follow:
 ]
 
 Web UI Tools:
-The Game Application supports Swagger UI Documentation Tool for making your request
-To enter the Swagger UI go to: http://localhost:8080/swagger-ui.html#/
+The Game Application supports Swagger UI Documentation Tool for more interactive requests
+To enter to the Swagger UI, go to: http://localhost:8080/swagger-ui.html#/
 
 
 
