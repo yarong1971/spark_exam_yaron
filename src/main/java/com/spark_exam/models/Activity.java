@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 public class Activity
 {
     private long userId;
-    private String userName;
+    private String name;
+    private String lastName;
     private String countryOfOrigin;
     private long eventId;
     private String eventTime;

@@ -45,47 +45,31 @@ public class EventService implements Serializable {
     private EventRepository eventRepository;
     @Autowired
     private UserService userService;
-    @Autowired
-    private SparkSession sparkSession;
 
     private Dataset<Row> rows;
 
     public List<Activity> getSuspiciousActivities(String fromDate, String toDate){
-        rows.registerTempTable("Events");
+        Dataset<Row> filteredActivities =  rows.filter(col(EVENT_TIME).between(fromDate, toDate)
+                                            .and(col(PROFIT).gt(WIN_BET_RATIO_LIMIT))
+                                            .and(col(ONLINE_TIME_SECS).gt(ONLINE_TIME_SEC_LIMIT)))
+                                            .select(USER_ID, NAME, LAST_NAME, COUNTRY_OF_ORIGIN, EVENT_ID,
+                                                    EVENT_TIME, EVENT_COUNTRY, GAME_NAME, ONLINE_TIME_SECS,
+                                                    CURRENCY_CODE, BET_VALUE, WIN, WIN_BET_RATIO, PROFIT);
 
-        String cte_SuspiciousUsers = "WITH cte_SuspiciousUsers " +
-                                        "AS " +
-                                        "(SELECT e." + USER_ID +
-                                        " FROM Events e " +
-                                        " WHERE e." + WIN_BET_RATIO + " > " + WIN_BET_RATIO_LIMIT +
-                                        " AND e." + ONLINE_TIME_SECS + " > " + ONLINE_TIME_SEC_LIMIT +
-                                        " AND e." + EVENT_TIME + " BETWEEN '" + fromDate + "' AND '" + toDate + "'" +
-                                        " GROUP BY e." + USER_ID +
-                                        " HAVING COUNT(DISTINCT(e." + EVENT_COUNTRY + ")) > 1)";
+        Dataset<Row> users = filteredActivities.select(USER_ID,EVENT_COUNTRY)
+                                            .groupBy(USER_ID)
+                                            .agg(approx_count_distinct(EVENT_COUNTRY).alias("count"))
+                                            .where(col("count").gt(1))
+                                            .drop(col("count"))
+                                            .withColumnRenamed(USER_ID, ID);
 
-        String suspiciousActivities = cte_SuspiciousUsers +
-                                     " SELECT e." + USER_ID +
-                                     ", CONCAT(e." + NAME + ",' ', e." + LAST_NAME + ") As userName" +
-                                     ", e." + COUNTRY_OF_ORIGIN +
-                                     ", e." + EVENT_ID +
-                                     ", e." + EVENT_TIME +
-                                     ", e." + EVENT_COUNTRY +
-                                     ", e." + GAME_NAME +
-                                     ", e." + ONLINE_TIME_SECS +
-                                     ", e." + CURRENCY_CODE +
-                                     ", e." + BET_VALUE +
-                                     ", e." + WIN +
-                                     ", e." + WIN_BET_RATIO +
-                                     ", e." + PROFIT +
-                                     " FROM Events e " +
-                                     " WHERE e." + WIN_BET_RATIO + " > " + WIN_BET_RATIO_LIMIT +
-                                     " AND e." + ONLINE_TIME_SECS + " > " + ONLINE_TIME_SEC_LIMIT +
-                                     " AND e." + EVENT_TIME + " BETWEEN '" + fromDate + "' AND '" + toDate + "'" +
-                                     " AND e." + USER_ID + " IN (SELECT cte.userId FROM cte_SuspiciousUsers cte) " +
-                                     " ORDER BY e." + USER_ID + ", e." + EVENT_TIME;
+        users.show(false);
 
-        Dataset<Row> result = sparkSession.sql(suspiciousActivities);
-        return eventRepository.getActivities(result);
+        Dataset<Row> suspicoiusActivities = filteredActivities.join(users,filteredActivities.col(USER_ID).equalTo(users.col(ID)),"inner")
+                                                        .drop(col(ID))
+                                                        .orderBy(USER_ID, EVENT_TIME);
+
+        return eventRepository.getActivities(suspicoiusActivities);
     }
 
     public GameStat getGameStatistics(String gameName, String fromDate, String toDate) {
