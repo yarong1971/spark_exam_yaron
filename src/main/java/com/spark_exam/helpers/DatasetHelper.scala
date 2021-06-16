@@ -1,9 +1,7 @@
 package com.spark_exam.helpers
 
-import com.spark_exam.models.GameStat
 import org.apache.spark.sql._
 
-import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.reflect.runtime.universe.TypeTag
 
 object DatasetHelper {

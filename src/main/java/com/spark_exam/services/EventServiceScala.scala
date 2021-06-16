@@ -1,10 +1,10 @@
 package com.spark_exam.services
 
 import com.spark_exam.helpers.DatasetHelper.DatasetExtension
-import com.spark_exam.models.{ActivityScala, Country, Currency, Event, GameStatScala, User}
+import com.spark_exam.models._
 import com.spark_exam.repositories.EventRepository
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.{Dataset, Encoder, Encoders, Row, SparkSession}
+import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import org.springframework.context.event.{ContextRefreshedEvent, EventListener}
 import org.springframework.stereotype.Service
 
@@ -50,7 +50,8 @@ case class EventServiceScala(@transient userService: UserService, @transient eve
                                                 .withColumnRenamed(USER_ID, ID)
 
     val suspicoiusActivities: Dataset[Row] = filteredActivities.join(users, filteredActivities.col(USER_ID).equalTo(users.col(ID)), "inner")
-                                                               .drop(col(ID)).orderBy(USER_ID, EVENT_TIME)
+                                                               .drop(col(ID))
+                                                               .orderBy(USER_ID, EVENT_TIME)
 
     return suspicoiusActivities.toList[ActivityScala]()
   }

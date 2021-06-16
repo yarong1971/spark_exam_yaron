@@ -2,7 +2,6 @@ package com.spark_exam.controllers;
 
 import com.spark_exam.models.Activity;
 import com.spark_exam.models.GameStat;
-import com.spark_exam.models.GameStatScala;
 import com.spark_exam.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
