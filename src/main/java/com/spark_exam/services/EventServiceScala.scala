@@ -34,8 +34,6 @@ case class EventServiceScala(@transient userService: UserService, @transient eve
   final val LAST_NAME: String = "lastName"
 
   private var rows: Dataset[Row] = null
-  val gameStatEncoder: Encoder[GameStatScala] = Encoders.product[GameStatScala]
-  val activityEncoder: Encoder[ActivityScala] = Encoders.product[ActivityScala]
 
   def getSuspiciousActivities(fromDate: String, toDate: String): java.util.List[ActivityScala] = {
     val filteredActivities: Dataset[Row] = rows.filter(col(EVENT_TIME).between(fromDate, toDate)
