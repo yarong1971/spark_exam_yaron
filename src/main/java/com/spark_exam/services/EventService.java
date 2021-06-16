@@ -1,9 +1,6 @@
 package com.spark_exam.services;
 
-import com.spark_exam.models.Activity;
-import com.spark_exam.models.Event;
-import com.spark_exam.models.GameStat;
-import com.spark_exam.models.User;
+import com.spark_exam.models.*;
 import com.spark_exam.repositories.EventRepository;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -30,11 +27,8 @@ public class EventService implements Serializable {
     public static final String GAME_NAME = "gameName";
     public static final String DEMO = "-demo";
     public static final String COUNTRY_OF_ORIGIN = "countryOfOrigin";
-    public static final String USA = "USA";
     public static final String CURRENCY_CODE = "currencyCode";
     public static final String EVENT_CURRENCY_CODE = "eventCurrencyCode";
-    public static final String EUR = "EUR";
-    public static final String USD = "USD";
     public static final String BET = "bet";
     public static final double WIN_BET_RATIO_LIMIT = 0.1;
     public static final double CONVERSION_RATE = 1.1;
@@ -46,7 +40,6 @@ public class EventService implements Serializable {
     private static final String EVENT_ID = "eventId";
     private static final String NAME = "name";
     private static final String LAST_NAME = "lastName";
-    public static final String STATS_TYPE = "StatsType";
 
     @Autowired
     private EventRepository eventRepository;
@@ -97,21 +90,22 @@ public class EventService implements Serializable {
 
     public GameStat getGameStatistics(String gameName, String fromDate, String toDate) {
         Dataset<Row> gameStatistics = rows.filter(col(EVENT_TIME).between(fromDate, toDate)
-                .and(col(GAME_NAME).equalTo(gameName)))
-                .select(GAME_NAME, BET_VALUE, WIN, PROFIT)
-                .groupBy(GAME_NAME)
-                .agg(avg(BET_VALUE).alias("betAvgStats"),
-                        max(BET_VALUE).alias("betMaxStats"),
-                        min(BET_VALUE).alias("betMinStats"),
-                        avg(WIN).alias("winAvgStats"),
-                        max(WIN).alias("winMaxStats"),
-                        min(WIN).alias("winMinStats"),
-                        avg(PROFIT).alias("profitAvgStats"),
-                        max(PROFIT).alias("profitMaxStats"),
-                        min(PROFIT).alias("profitMinStats"))
-                .orderBy(GAME_NAME);
+                                          .and(col(GAME_NAME).equalTo(gameName)))
+                                          .select(GAME_NAME, BET_VALUE, WIN, PROFIT)
+                                          .groupBy(GAME_NAME)
+                                          .agg(avg(BET_VALUE).alias("betAvgStats"),
+                                               max(BET_VALUE).alias("betMaxStats"),
+                                               min(BET_VALUE).alias("betMinStats"),
+                                               avg(WIN).alias("winAvgStats"),
+                                               max(WIN).alias("winMaxStats"),
+                                               min(WIN).alias("winMinStats"),
+                                               avg(PROFIT).alias("profitAvgStats"),
+                                               max(PROFIT).alias("profitMaxStats"),
+                                               min(PROFIT).alias("profitMinStats"))
+                                          .orderBy(GAME_NAME);
 
-        return eventRepository.getGameStats(gameStatistics).isEmpty() ?  null : eventRepository.getGameStats(gameStatistics).get(0);
+        return eventRepository.getGameStats(gameStatistics).isEmpty() ?  null
+                                                                      : eventRepository.getGameStats(gameStatistics).get(0);
     }
 
     public List<GameStat> getAllGamesStatistics(String fromDate, String toDate) {
@@ -139,9 +133,9 @@ public class EventService implements Serializable {
             Dataset<User> users = userService.getDatasetUsers();
 
             rows = events.join(users, events.col(USER_ID).equalTo(users.col(ID))).drop(col(ID))
-                    .filter(not(col(GAME_NAME).contains(DEMO).and(col(COUNTRY_OF_ORIGIN).equalTo(USA))))
-                    .withColumn(CURRENCY_CODE, when(col(EVENT_CURRENCY_CODE).equalTo(EUR), lit(USD)).otherwise(col(EVENT_CURRENCY_CODE)))
-                    .withColumn((BET_VALUE), when(col(EVENT_CURRENCY_CODE).equalTo(EUR), (col(BET).multiply(CONVERSION_RATE))).otherwise(col(BET)))
+                    .filter(not(col(GAME_NAME).contains(DEMO).and(col(COUNTRY_OF_ORIGIN).equalTo(Country.USA.toString()))))
+                    .withColumn(CURRENCY_CODE, when(col(EVENT_CURRENCY_CODE).equalTo(Currency.EUR.toString()), Currency.USD.toString()).otherwise(col(EVENT_CURRENCY_CODE)))
+                    .withColumn((BET_VALUE), when(col(EVENT_CURRENCY_CODE).equalTo(Currency.EUR.toString()), (col(BET).multiply(CONVERSION_RATE))).otherwise(col(BET)))
                     .withColumn(PROFIT, col(WIN).minus(col(BET_VALUE)))
                     .withColumn(WIN_BET_RATIO, col(WIN).divide(col(BET_VALUE)))
                     .drop(EVENT_CURRENCY_CODE);
