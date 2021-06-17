@@ -21,6 +21,7 @@ the events data is used as a big data platform to work with Spark SQL
 
 Services:
 The REST API exposes the following services (in Java and Scala):
+All the services output (Http Response) are in a json format
 
 Service 1: Suspicious activities of users/players:
 a suspicious activity is defined by the following rules:
@@ -35,8 +36,7 @@ Java Example: http://localhost:8080/event/suspiciousActivities/java/2018-01-01/2
 Scala: http://localhost:8080/event/suspiciousActivities/scala/{fromDate}/{toDate}
 Scala Example: http://localhost:8080/event/suspiciousActivities/scala/2018-01-01/2018-01-15
 
-The Output (Http Response) is in a json format and its content looks as follow:
-
+Output sample:
 [
   {
     "userId": 1,
@@ -86,7 +86,7 @@ Java Example: http://localhost:8080/event/gamestat/java/poker/2018-01-01/2018-01
 Scala: http://localhost:8080/event/gamestat/scala/{fromDate}/{toDate}
 Scala Example: http://localhost:8080/event/gamestat/scala/poker/2018-01-01/2018-01-15
 
-The Output (Http Response) is in a json format and its content looks as follow:
+Output sample:
 
 {
   "gameName": "poker",
@@ -115,7 +115,7 @@ Java Example: http://localhost:8080/event/gamestat/all/java/2018-01-01/2018-01-1
 Scala: http://localhost:8080/event/gamestat/all/scala/{fromDate}/{toDate}
 Scala Example: http://localhost:8080/event/gamestat/all/scala/2018-01-01/2018-01-15
 
-The Output (Http Response) is in a json format and its content looks as follow:
+Output sample:
 
 [
   {
@@ -144,6 +144,32 @@ The Output (Http Response) is in a json format and its content looks as follow:
   },
   ....
 ]
+
+Service 4: Users index (Java only)
+This service outputs the users list in json format
+
+The Http request is:
+http://localhost:8080/user/index
+
+Output sample:
+
+[
+  {
+    "id": 1,
+    "name": "Alex",
+    "lastName": "Popov",
+    "countryOfOrigin": "USA",
+    "email": "email@mail999.com"
+  },
+  {
+    "id": 2,
+    "name": "Igor",
+    "lastName": "Pov",
+    "countryOfOrigin": "PL",
+    "email": "email@mail998.com"
+  },
+ ....
+ ]
 
 Web UI Tools:
 The Game Application supports Swagger UI Documentation Tool for more interactive requests
