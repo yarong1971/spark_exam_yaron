@@ -8,7 +8,7 @@ The REST API is built on the Spring Framework, an application framework and inve
 The business logic for this application is written both in Java and Scala
 
 Data and Storage:
-User/Player data is The data is loaded by a SQL script file named "users.sql", which resides in the resources folder, and stored in H2 database.
+User/Player data is loaded by a SQL script file named "users.sql", which resides in the resources folder, and stored in H2 database.
 it is an open-source lightweight Java SQL database, which is configured to run as inmemory database.
 The name of the database is "game_platform".
 
